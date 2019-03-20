@@ -1,0 +1,135 @@
+﻿@using FirmaMVC
+@model List<FirmaMVC.Models.Employee.Department>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+</br>Wykaz działów</br></br>
+@{
+    ViewData["Title"] = "Departament";
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Nazwa</th>
+                <th scope="col">Hierarchia</th>
+                <th scope="col">Dział nadrzędny</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var item in Model)
+                {
+
+                    <tr>
+                        @*<th scope="row">1</th>*@
+                        <td>@item.DepartmentId</td>
+                        <td>@item.Name</td>
+                        <td>@item.Hierarchy</td>
+                        <td>@item.Parent</td>
+                        <td><a href="/Department/Delete/@item.DepartmentId/"> Usuń </a></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    int id;
+    <canvas width="800" height="400" id="can"></canvas>
+
+    <script script charset="utf-8">
+        let data = [@Model.Count];
+    </script>
+
+    int i = 0;
+    foreach (var item in Model)
+    {
+        <script script charset="utf-8">
+            data[@i] = [@item.DepartmentId, @item.Hierarchy, @item.Parent];
+        </script>
+        i++;
+    }
+
+    <script>
+        $(document).ready(function() 
+        {
+            var text = null;
+            $.ajax  
+            ({
+                //type: "GET",
+                url: "@Url.Action("ReturnJsonDepartmentsHierarchy", "Department")",
+                //data: { 'title': text},
+                success: function (data) 
+                {
+                    console.log(data);
+                    const canvasElem = document.getElementById('can');
+                    const ctx = canvasElem.getContext('2d');
+
+                    ctx.fillStyle = "#999999";
+                    ctx.font = "15px Arial";
+                    console.log(data);
+
+                    var hierLine = 1;
+                    var nextLine = 40;
+                    var column = 20;
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        if (data[i].departHier > hierLine)
+                        {
+                            nextLine = nextLine + 60;
+                            hierLine++;
+                            column = 20;
+                        }
+                        ctx.fillText
+                        (
+                            data[i].departName,
+                            column,
+                            nextLine
+                        );
+                        column = column + 160;
+                    }
+                },
+            });
+        });
+    </script>
+
+    <script script charset="utf-8">
+        //const canvasElem = document.getElementById('can');
+        //const ctx = canvasElem.getContext('2d');
+
+        //ctx.fillStyle = "#999999";
+
+        //var howmany_elements = 800 / data.length;
+        //console.log(data);
+
+        //for (var i = 0; i < data.length; i++) {
+        //    ctx.font = "30px Arial";
+        //    ctx.fillText(data[i][0], howmany_elements * i, 50);
+        //    ctx.fillText(data[i][1], howmany_elements * i, 100);
+        //    ctx.fillText(data[i][2], howmany_elements * i, 150);
+        //}
+    </script>
+
+
+
+
+    <div class="container">
+        <form asp-controller="Department" asp-action="Add" method="post">
+            <div class="form-group row">
+                <div class="col-xs-4">
+                    <label for="ex1">Nazwa dodawanego działu</label>
+                    <input type="text" class="form-control" id="ex1" name="Name" required>
+                </div>
+                <div class="col-xs-4">
+                    <label for="ex2">Wskaż dział nadrzędny</label>
+                    <select class="form-control" id="ex2" name="Id">
+                        @foreach (var item in Model)
+                        {
+                            <option value="@item.DepartmentId">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-default">Akceptuj</button>
+        </form>
+    </div>
+}
+
+
+
