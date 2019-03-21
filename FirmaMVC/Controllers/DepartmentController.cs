@@ -28,18 +28,12 @@ namespace FirmaMVC.Controllers
             List<Department> depart = new List<Department>();
             AnalyzeHierarchy ah = new AnalyzeHierarchy();
             List<int> zapamietajID = new List<int>();
+
             int currentParentId = query[0].Parent;
-            int currentParentId2 = 0;
-            zapamietajID.Add(query[0].DepartmentId);
-            bool flaga = false;
             bool firstLoop = false;
 
-            //while (depart.Count < query.Count)
-            for (int z = 0; z < 2;z++)
+            while (zapamietajID.Count < query.Count)
             {
-                flaga = false;
-                currentParentId2 = 0;
-
                 if (firstLoop == true)
                 {
                     for (int i = 0; i < zapamietajID.Count ; i++)
@@ -47,6 +41,7 @@ namespace FirmaMVC.Controllers
                         if (query[i].DepartmentId != zapamietajID[i])
                         {
                             currentParentId = query[i].Parent;
+                            break;
                         }
                     }
                 }
@@ -58,34 +53,30 @@ namespace FirmaMVC.Controllers
                     {
                         continue;
                     }
+
                     if (ah.czyMaszDzieci(query[i].DepartmentId, query) == true)
                     {
                         if(currentParentId == query[i].Parent)
                         {
+                            zapamietajID.Add(query[i].DepartmentId);
+                            depart.Add(query[i]);
+                            currentParentId = query[i].DepartmentId;
                             continue;
-                        }
-                        zapamietajID.Add(query[i].DepartmentId);
-                        currentParentId = query[i].Parent;
+                        } 
                     }
                     else if (ah.czyMaszDzieci(query[i].DepartmentId, query) == false)
                     {
-                        if (flaga == false)
+                        if (currentParentId == query[i].Parent)
                         {
-                            currentParentId2 = query[i].Parent;
+                            zapamietajID.Add(query[i].DepartmentId);
+                            depart.Add(query[i]);
                         }
-
-                        if (currentParentId2 != query[i].Parent)
-                        {
-                            break;
-                        }
-                        zapamietajID.Add(query[i].DepartmentId);
-                        currentParentId = query[i].Parent;
-                        flaga = true;
                     }
                 }
             }
+
             var xx = zapamietajID;
-            return View(query);
+            return View(depart);
         }
 
         [HttpPost]

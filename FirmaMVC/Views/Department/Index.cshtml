@@ -17,11 +17,17 @@
             @{
                 foreach (var item in Model)
                 {
-
                     <tr>
                         @*<th scope="row">1</th>*@
                         <td>@item.DepartmentId</td>
-                        <td>@item.Name</td>
+                        <td>
+                            @for (int x = 0; x < (@item.Hierarchy-1)*6; x++)
+                            {
+                                if (item.DepartmentId == 1) { continue;};
+                                @Html.Raw("&nbsp;");
+                            }
+                            @item.Name
+                        </td>
                         <td>@item.Hierarchy</td>
                         <td>@item.Parent</td>
                         <td><a href="/Department/Delete/@item.DepartmentId/"> Usuń </a></td>
@@ -31,7 +37,7 @@
         </tbody>
     </table>
     int id;
-    <canvas width="800" height="400" id="can"></canvas>
+    <canvas width="100" height="5" id="can"></canvas>
 
     <script script charset="utf-8">
         let data = [@Model.Count];
