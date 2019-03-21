@@ -94,18 +94,38 @@ namespace FirmaMVC.Controllers
 
         public IActionResult Delete(int id)
         {
-            var department = context.Set<Department>();
-            department.Remove(new Department { DepartmentId = id });
+            var query = (from d in context.Department
+            select new Department 
+            {
+                DepartmentId = d.DepartmentId,
+                Name = d.Name,
+                Parent = d.Parent,
+                Hierarchy = d.Hierarchy
+            }).
+            OrderBy(d => d.Parent).ToList();
 
-            try
-            {
-                context.SaveChanges();
-                return RedirectToAction("Index", "Department");
-            }
-            catch (Exception e)
+            AnalyzeHierarchy ah = new AnalyzeHierarchy();
+
+            if (ah.czyMaszDzieci(id, query) == true)
             {
                 return RedirectToAction("Index", "Department");
             }
+            else if (ah.czyMaszDzieci(id, query) == false)
+            {
+                var department = context.Set<Department>();
+                department.Remove(new Department { DepartmentId = id });
+
+                try
+                {
+                    context.SaveChanges();
+                    return RedirectToAction("Index", "Department");
+                }
+                catch (Exception e)
+                {
+                    return RedirectToAction("Index", "Department");
+                }
+            }
+            return RedirectToAction("Index", "Department");
         }
 
         public JsonResult ReturnJsonDepartmentsHierarchy()
