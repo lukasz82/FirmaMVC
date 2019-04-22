@@ -11,27 +11,29 @@
                 <th scope="col">Nazwa</th>
                 <th scope="col">Hierarchia</th>
                 <th scope="col">Dział nadrzędny</th>
+                <th scope="col">Dodaj</th>
             </tr>
         </thead>
         <tbody>
             @{
                 foreach (var item in Model)
                 {
-                    <tr>
-                        @*<th scope="row">1</th>*@
-                        <td>@item.DepartmentId</td>
-                        <td>
-                            @for (int x = 0; x < (@item.Hierarchy-1)*6; x++)
-                            {
-                                if (item.DepartmentId == 1) { continue;};
-                                @Html.Raw("&nbsp;");
-                            }
-                            @item.Name
-                        </td>
-                        <td>@item.Hierarchy</td>
-                        <td>@item.Parent</td>
-                        <td><a href="/Department/Delete/@item.DepartmentId/"> Usuń </a></td>
-                    </tr>
+            <tr>
+                @*<th scope="row">1</th>*@
+                <td>@item.DepartmentId</td>
+                <td>
+                    @for (int x = 0; x < (@item.Hierarchy - 1) * 6; x++)
+                    {
+                        if (item.DepartmentId == 1) { continue; };
+                        @Html.Raw("&nbsp;");
+                    }
+                    @item.Name
+                </td>
+                <td>@item.Hierarchy</td>
+                <td>@item.Parent</td>
+                <td><button type="button" class="btn btn-success">+</button></td>
+                <td><a href="/Department/Delete/@item.DepartmentId/"> Usuń </a></td>
+            </tr>
                 }
             }
         </tbody>

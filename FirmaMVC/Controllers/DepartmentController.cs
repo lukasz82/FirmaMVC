@@ -23,16 +23,21 @@ namespace FirmaMVC.Controllers
                              Parent = d.Parent,
                              Hierarchy = d.Hierarchy
                          }).
-                         OrderBy(d => d.Parent).ToList();
+                         OrderBy(d => d.Hierarchy).ToList();
 
             List<Department> depart = new List<Department>();
             AnalyzeHierarchy ah = new AnalyzeHierarchy();
             List<int> zapamietajID = new List<int>();
 
             int currentParentId = query[0].Parent;
+            int rememberParentId = 0;
             bool firstLoop = false;
+            bool whenBothCheckChildrenFalse = false;
+            Department rememberOmittedDepartment = null;
+            int iStart = 0;
 
-            while (zapamietajID.Count < query.Count)
+            //while (zapamietajID.Count < query.Count)
+            for (int z = 0; z < 20; z++)
             {
                 if (firstLoop == true)
                 {
@@ -47,12 +52,24 @@ namespace FirmaMVC.Controllers
                 }
                 firstLoop = true;
 
-                for (int i = 0; i < query.Count; i++)
+                for (int i = iStart; i < query.Count; i++)
                 {
+                    whenBothCheckChildrenFalse = false;
+
                     if (zapamietajID.Contains(query[i].DepartmentId))
                     {
                         continue;
                     }
+
+                    //if (rememberOmittedDepartment != null)
+                    //{
+                    //    zapamietajID.Add(rememberOmittedDepartment.DepartmentId);
+                    //    depart.Add(rememberOmittedDepartment);
+                    //    //currentParentId = rememberOmittedDepartment.DepartmentId;
+                    //    //currentParentId = query[i].DepartmentId;
+                    //    rememberOmittedDepartment = null;
+                    //    continue;
+                    //}
 
                     if (ah.czyMaszDzieci(query[i].DepartmentId, query) == true)
                     {
@@ -61,6 +78,10 @@ namespace FirmaMVC.Controllers
                             zapamietajID.Add(query[i].DepartmentId);
                             depart.Add(query[i]);
                             currentParentId = query[i].DepartmentId;
+                            if (rememberParentId != query[i].Parent)
+                            {
+                                rememberParentId = currentParentId;
+                            }
                             continue;
                         } 
                     }
@@ -70,11 +91,24 @@ namespace FirmaMVC.Controllers
                         {
                             zapamietajID.Add(query[i].DepartmentId);
                             depart.Add(query[i]);
+                            continue;
+                        } 
+                        if (rememberParentId == query[i].Parent)
+                        {
+                            whenBothCheckChildrenFalse = true;
                         }
+                    }
+
+                    if (whenBothCheckChildrenFalse == true)
+                    {
+                        //rememberOmittedDepartment = query[i];
+                        iStart = i - 1;
+                        break;
                     }
                 }
             }
 
+            var zz = query;
             var xx = zapamietajID;
             return View(depart);
         }
