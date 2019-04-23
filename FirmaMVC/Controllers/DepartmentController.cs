@@ -36,7 +36,6 @@ namespace FirmaMVC.Controllers
             Department rememberOmittedDepartment = null;
             int iStart = 0;
 
-            //while (zapamietajID.Count < query.Count)
             for (int z = 0; z < 20; z++)
             {
                 if (firstLoop == true)
@@ -107,9 +106,6 @@ namespace FirmaMVC.Controllers
                     }
                 }
             }
-
-            var zz = query;
-            var xx = zapamietajID;
             return View(depart);
         }
 
